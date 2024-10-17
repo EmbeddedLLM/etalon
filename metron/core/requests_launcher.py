@@ -13,6 +13,7 @@ class RequestsLauncher:
     def __init__(
         self,
         model: str,
+        served_model_name: str | None,
         llm_api: str,
         num_ray_clients: int,
         num_concurrent_requests_per_client: int,

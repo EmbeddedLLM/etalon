@@ -37,6 +37,7 @@ logger = init_logger(__name__)
 
 def get_request_params(
     model: str,
+    served_model_name: str | None,
     llm_api: str,
     tokenizer: Any,
     additional_sampling_params: Optional[Dict[str, Any]] = None,
@@ -61,6 +62,7 @@ def get_request_params(
     default_sampling_params.update(additional_sampling_params)
     request_config = RequestConfig(
         model=model,
+        served_model_name=served_model_name,
         prompt=prompt,
         sampling_params=default_sampling_params,
         llm_api=llm_api,
@@ -107,6 +109,7 @@ async def collect_results(
 
 async def run_main_loop(
     model: str,
+    served_model_name: str | None,
     llm_api: str,
     tokenizer: Any,
     additional_sampling_params: Optional[Dict[str, Any]] = None,
@@ -123,6 +126,7 @@ async def run_main_loop(
 ):
     req_launcher = RequestsLauncher(
         model=model,
+        served_model_name=served_model_name,
         llm_api=llm_api,
         num_ray_clients=num_ray_clients,
         num_concurrent_requests_per_client=num_concurrent_requests_per_client,
@@ -139,6 +143,7 @@ async def run_main_loop(
                     service_metrics.register_launched_request()
                     request_config = get_request_params(
                         model=model,
+                        served_model_name=served_model_name,
                         llm_api=llm_api,
                         tokenizer=tokenizer,
                         additional_sampling_params=additional_sampling_params,
@@ -185,6 +190,7 @@ async def run_main_loop(
 
 def run_benchmark(
     model: str,
+    served_model_name: str | None,
     output_dir: str,
     additional_sampling_params: Optional[Dict[str, Any]] = None,
     num_ray_clients: int = 2,
@@ -265,6 +271,7 @@ def run_benchmark(
     asyncio.run(
         run_main_loop(
             model=model,
+            served_model_name=served_model_name,
             llm_api=llm_api,
             tokenizer=tokenizer,
             additional_sampling_params=additional_sampling_params,
@@ -299,6 +306,9 @@ def parse_args():
 
     args.add_argument(
         "--model", type=str, required=True, help="The model to use for this load test."
+    )
+    args.add_argument(
+        "--served-model-name", type=str, required=False, default=None, help="The served model name to use for this load test."
     )
     args.add_argument(
         "--num-ray-clients",
@@ -629,6 +639,7 @@ if __name__ == "__main__":
         llm_api=args.llm_api,
         output_dir=args.output_dir,
         model=args.model,
+        served_model_name=args.served_model_name,
         timeout=args.timeout,
         max_num_completed_requests=args.max_num_completed_requests,
         num_ray_clients=args.num_ray_clients,

@@ -16,6 +16,7 @@ class RequestConfig(BaseModel):
     """
 
     model: str
+    served_model_name: str | None
     prompt: Tuple[str, int]
     sampling_params: Optional[Dict[str, Any]] = None
     llm_api: Optional[str] = None

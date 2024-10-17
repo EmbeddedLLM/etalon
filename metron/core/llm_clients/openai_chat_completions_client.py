@@ -55,7 +55,7 @@ class OpenAIChatCompletionsClient(BaseLLMClient):
         message = [
             {"role": "user", "content": prompt},
         ]
-        model = request_config.model
+        model = request_config.served_model_name if request_config.served_model_name else request_config.model
         body = {
             "model": model,
             "messages": message,
