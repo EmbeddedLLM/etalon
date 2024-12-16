@@ -3,7 +3,7 @@ import argparse
 import ray
 
 from etalon.capacity_search.capacity_search import CapacitySearch
-from etalon.capacity_search.config.config import JobConfig
+from etalon.capacity_search.config.config import JobConfig, _get_hash
 from etalon.capacity_search.ray_utils import (
     RayParallelRunner,
     ReplicaResourceMapping,
@@ -59,3 +59,9 @@ class SearchManager:
             job_configs,
         )
         return all_results
+    
+    def get_hash_keys(self):
+        return [
+            _get_hash(job_config.get_key())
+            for job_config in JobConfig.generate_job_configs(self.config)
+        ]
